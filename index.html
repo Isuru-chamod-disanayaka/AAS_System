@@ -1,0 +1,618 @@
+
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASS ආයතන ERP සිස්ටම්</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            transform: scale(1.05);
+        }
+
+        .section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .report-card {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #333;
+            box-shadow: 0 4px 15px rgba(132, 250, 176, 0.3);
+        }
+
+        .summary-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .transaction-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            background-color: #f8f9ff;
+        }
+
+        .income {
+            border-left: 4px solid #28a745;
+        }
+
+        .expense {
+            border-left: 4px solid #dc3545;
+        }
+
+        .responsive-table {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .online {
+            background-color: #28a745;
+        }
+
+        .offline {
+            background-color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 90%;
+                max-width: 300px;
+            }
+            
+            .date-filter {
+                flex-direction: column;
+            }
+            
+            .date-filter input, .date-filter select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ASS ආයතන ERP සිස්ටම්</h1>
+            <p>සම්පූර්ණ ආර්థික කළමනාකරණ සිස්ටමය</p>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showSection('dashboard')">මුලු පිටුව</button>
+            <button class="nav-btn" onclick="showSection('donors')">දායක සභාව</button>
+            <button class="nav-btn" onclick="showSection('business')">බිස්නස් අංශය</button>
+            <button class="nav-btn" onclick="showSection('reports')">වාර්තා</button>
+            <button class="nav-btn" onclick="showSection('admin')">පරිපාලන</button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <h2>📊 මූලික තොරතුරු පුවරුව</h2>
+            <div class="report-grid">
+                <div class="summary-card">
+                    <h3>දායක සභා ආදායම</h3>
+                    <div class="summary-value" id="donor-income">රු 0.00</div>
+                    <small>මේ මාසේ</small>
+                </div>
+                <div class="summary-card">
+                    <h3>බිස්නස් ආදායම</h3>
+                    <div class="summary-value" id="business-income">රු 0.00</div>
+                    <small>මේ මාසේ</small>
+                </div>
+                <div class="summary-card">
+                    <h3>සම්පූර්ණ වියදම්</h3>
+                    <div class="summary-value" id="total-expenses">රු 0.00</div>
+                    <small>මේ මාසේ</small>
+                </div>
+                <div class="summary-card">
+                    <h3>ශුද්ධ ලාභය</h3>
+                    <div class="summary-value" id="net-profit">රු 0.00</div>
+                    <small>මේ මාසේ</small>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <h3>📈 වර්තමාන මාසේ කාර්යසාධනය</h3>
+                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                    <div>
+                        <strong>අද දින ගණුදෙනු:</strong> <span id="today-transactions">0</span>
+                    </div>
+                    <div>
+                        <strong>සක්‍රිය උපාංග:</strong> <span id="active-devices">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Donors Section -->
+        <div id="donors" class="section">
+            <h2>🤝 දායක සභා කළමනාකරණය</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div>
+                    <h3>ආදායම් ඇතුල් කිරීම</h3>
+                    <form id="donor-income-form">
+                        <div class="form-group">
+                            <label>ආදායම් වර්ගය:</label>
+                            <select id="income-type" required>
+                                <option value="">තෝරන්න</option>
+                                <option value="bank">බැංකු ආදායම</option>
+                                <option value="aid">ආධාර</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>මුදල (රුපියල්):</label>
+                            <input type="number" id="income-amount" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>විස්තරය:</label>
+                            <textarea id="income-description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>දිනය:</label>
+                            <input type="date" id="income-date" required>
+                        </div>
+                        <button type="submit" class="btn">ආදායම ඇතුල් කරන්න</button>
+                    </form>
+                </div>
+
+                <div>
+                    <h3>වියදම් ඇතුල් කිරීම</h3>
+                    <form id="donor-expense-form">
+                        <div class="form-group">
+                            <label>වියදමට හේතුව:</label>
+                            <input type="text" id="expense-reason" required>
+                        </div>
+                        <div class="form-group">
+                            <label>වගකිව යුතු පුද්ගලයා:</label>
+                            <input type="text" id="expense-person" required>
+                        </div>
+                        <div class="form-group">
+                            <label>මුදල (රුපියල්):</label>
+                            <input type="number" id="expense-amount" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>දිනය:</label>
+                            <input type="date" id="expense-date" required>
+                        </div>
+                        <button type="submit" class="btn">වියදම ඇතුල් කරන්න</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <h3>📋 දායක සභා ගණුදෙනු</h3>
+                <div class="date-filter">
+                    <label>කාල සීමාව:</label>
+                    <select id="donor-period">
+                        <option value="today">අද</option>
+                        <option value="week">මේ සතිය</option>
+                        <option value="month">මේ මාසය</option>
+                        <option value="year">මේ වර්ෂය</option>
+                    </select>
+                    <button class="btn" onclick="generateDonorReport()">වාර්තාව බලන්න</button>
+                </div>
+                <div id="donor-transactions" class="transaction-list"></div>
+            </div>
+        </div>
+
+        <!-- Business Section -->
+        <div id="business" class="section">
+            <h2>🏢 බිස්නස් අංශ කළමනාකරණය</h2>
+            
+            <div class="category-tabs">
+                <button class="category-tab active" onclick="selectBusinessCategory('shop')">කඩය</button>
+                <button class="category-tab" onclick="selectBusinessCategory('vendors')">වෙළෙන්දන්</button>
+                <button class="category-tab" onclick="selectBusinessCategory('boats')">බෝට්ටු</button>
+                <button class="category-tab" onclick="selectBusinessCategory('toilet')">ටොයිලට්</button>
+            </div>
+
+            <div id="business-forms">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div>
+                        <h3 id="business-income-title">කඩය - ආදායම්</h3>
+                        <form id="business-income-form">
+                            <div class="form-group">
+                                <label>ආදායම් මුදල (රුපියල්):</label>
+                                <input type="number" id="business-income-amount" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>විස්තරය:</label>
+                                <textarea id="business-income-description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>දිනය:</label>
+                                <input type="date" id="business-income-date" required>
+                            </div>
+                            <button type="submit" class="btn">ආදායම ඇතුල් කරන්න</button>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h3 id="business-expense-title">කඩය - වියදම්</h3>
+                        <form id="business-expense-form">
+                            <div class="form-group">
+                                <label>වියදම් මුදල (රුපියල්):</label>
+                                <input type="number" id="business-expense-amount" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>වියදමේ විස්තරය:</label>
+                                <textarea id="business-expense-description" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>දිනය:</label>
+                                <input type="date" id="business-expense-date" required>
+                            </div>
+                            <button type="submit" class="btn">වියදම ඇතුල් කරන්න</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <h3 id="business-report-title">📊 කඩයේ ගණුදෙනු</h3>
+                <div class="date-filter">
+                    <label>කාල සීමාව:</label>
+                    <select id="business-period">
+                        <option value="today">අද</option>
+                        <option value="week">මේ සතිය</option>
+                        <option value="month">මේ මාසය</option>
+                        <option value="year">මේ වර්ෂය</option>
+                    </select>
+                    <button class="btn" onclick="generateBusinessReport()">වාර්තාව බලන්න</button>
+                </div>
+                <div id="business-transactions" class="transaction-list"></div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="section">
+            <h2>📈 වාර්තා සහ විශ්ලේෂණ</h2>
+            
+            <div class="report-grid">
+                <div class="report-card">
+                    <h3>📊 සම්පූර්ණ ආදායම් වියදම් විශ්ලේෂණය</h3>
+                    <div class="date-filter">
+                        <label>වර්ෂය:</label>
+                        <select id="report-year">
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                        <label>මාසය:</label>
+                        <select id="report-month">
+                            <option value="">සියළු මාස</option>
+                            <option value="01">ජනවාරි</option>
+                            <option value="02">පෙබරවාරි</option>
+                            <option value="03">මාර්තු</option>
+                            <option value="04">අප්‍රේල්</option>
+                            <option value="05">මැයි</option>
+                            <option value="06">ජුනි</option>
+                            <option value="07">ජූලි</option>
+                            <option value="08">අගෝස්තු</option>
+                            <option value="09">සැප්තැම්බර්</option>
+                            <option value="10">ඔක්තෝම්බර්</option>
+                            <option value="11">නොවැම්බර්</option>
+                            <option value="12">දෙසැම්බර්</option>
+                        </select>
+                        <button class="btn" onclick="generateComprehensiveReport()">වාර්තාව ජනනය කරන්න</button>
+                    </div>
+                    <div id="comprehensive-report"></div>
+                </div>
+
+                <div class="report-card">
+                    <h3>💰 අංශ අනුව ආදායම් සැසඳීම</h3>
+                    <div id="department-comparison"></div>
+                </div>
+            </div>
+
+            <div class="responsive-table">
+                <h3>📋 සෑම අංශයකම මාසික සාරාංශය</h3>
+                <table id="monthly-summary-table">
+                    <thead>
+                        <tr>
+                            <th>අංශය</th>
+                            <th>ආදායම (රු)</th>
+                            <th>වියදම (රු)</th>
+                            <th>ශුද්ධ (රු)</th>
+                            <th>ප්‍රතිශතය (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthly-summary-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Admin Section -->
+        <div id="admin" class="section">
+            <h2>⚙️ පරිපාලන කළමනාකරණය</h2>
+            
+            <div class="report-grid">
+                <div class="summary-card">
+                    <h3>🖥️ උපාංග කළමනාකරණය</h3>
+                    <div class="summary-value" id="total-devices">3</div>
+                    <small>සම්පූර්ණ උපාංග</small>
+                    <div style="margin-top: 15px;">
+                        <div style="display: flex; align-items: center; margin: 5px 0;">
+                            <span class="status-indicator online"></span>
+                            <span>මුල් පරිගණකය - සක්‍රිය</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin: 5px 0;">
+                            <span class="status-indicator online"></span>
+                            <span>කාර්යාල පරිගණකය - සක්‍රිය</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin: 5px 0;">
+                            <span class="status-indicator offline"></span>
+                            <span>ජංගම උපාංගය - අක්‍රිය</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <h3>💾 දත්ත පිටුපස</h3>
+                    <button class="btn" onclick="backupData()">දත්ත සුරක්ෂිතව තබන්න</button>
+                    <button class="btn" onclick="exportData()">දත්ත නිර්යාත කරන්න</button>
+                    <div style="margin-top: 15px; font-size: 14px;">
+                        <div>අවසන් සුරක්ෂිතකරණය: අද</div>
+                        <div>සම්පූර්ණ ගණුදෙනු: <span id="total-transactions">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <h3>📊 සිස්ටම් අනුරූප කිරීම</h3>
+                <form id="system-settings">
+                    <div class="form-group">
+                        <label>මුදල් ආකෘතිය:</label>
+                        <select id="currency-format">
+                            <option value="LKR">ශ්‍රී ලංකා රුපියල් (රු)</option>
+                            <option value="USD">ඇමරිකා ඩොලර් ($)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>වාර්තා භාෂාව:</label>
+                        <select id="report-language">
+                            <option value="si">සිංහල</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ස්වයංක්‍රීය සුරක්ෂිතකරණය:</label>
+                        <select id="auto-backup">
+                            <option value="daily">දිනපතා</option>
+                            <option value="weekly">සතිපතා</option>
+                            <option value="monthly">මාසිකව</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">සැකසුම් සුරකින්න</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
